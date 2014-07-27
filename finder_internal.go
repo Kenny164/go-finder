@@ -109,7 +109,7 @@ func checkSize(minSize int64, maxSize int64, size int64, add *bool) {
 
 func checkSince(minDate time.Time, modTime time.Time, add *bool) {
 	if *add == true {
-		if minDate.IsZero() || minDate.After(modTime) {
+		if !minDate.IsZero() && minDate.After(modTime) {
 			*add = false
 		}
 	}

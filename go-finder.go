@@ -212,7 +212,7 @@ func (finder *Finder) ExcludeVCS() *Finder {
 // Example:
 //    finder := Create("/home/myuser/mydir").Since(-3) // 3 days old at most
 func (finder *Finder) Since(days int) *Finder {
-	minDate := time.Now().AddDate(0, 0, days) // x days ago
+	minDate := time.Now().AddDate(0, 0, -days) // x days ago
 	finder.f.minDate = minDate
 	return finder
 }

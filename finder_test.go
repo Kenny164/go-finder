@@ -185,6 +185,8 @@ var getProvider = []struct {
 	{Create("fixture").MinSize("3 Ki"), 0},
 	{Create("fixture").MinSize("1").MaxSize("1 Ki"), 1},
 	{Create("fixture/f3").Depth(0).MinSize("1 K"), 1},
+	{Create("fixture").Depth(5).Since(30), 11},
+	{Create("fixture").Depth(5).Since(3650), 12},
 }
 
 func TestGet(t *testing.T) {
