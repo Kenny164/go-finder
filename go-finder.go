@@ -19,7 +19,7 @@ type finder struct {
 	in                        string
 	depth                     int
 	excludeHidden, excludeVCS bool
-	minSize, maxSize, since   int64
+	minSize, maxSize          int64
 	minDate                   time.Time
 }
 
