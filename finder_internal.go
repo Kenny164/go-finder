@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func isHidden(directoryName string) bool {
@@ -106,6 +107,14 @@ func checkSize(minSize int64, maxSize int64, size int64, add *bool) {
 	}
 }
 
+func checkSince(minDate time.Time, modTime time.Time, add *bool) {
+	if *add == true {
+		if minDate.IsZero() || minDate.After(modTime) {
+			*add = false
+		}
+	}
+}
+
 func isValidDepth(path string, maxDepth int, baseDepth int) bool {
 	pathDepth := depth(path)
 
@@ -149,6 +158,7 @@ func readDirectory(path string, depth int, baseDepth int, f finder) []os.FileInf
 				checkName(f.namesLike, element.Name(), &add)
 				checkNotName(f.namesNotLike, element.Name(), &add)
 				checkSize(f.minSize, f.maxSize, element.Size(), &add)
+				checkSince(f.minDate, element.ModTime(), &add)
 				if add {
 					items = append(items, element)
 				}
