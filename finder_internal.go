@@ -115,6 +115,17 @@ func checkSince(minDate time.Time, modTime time.Time, add *bool) {
 	}
 }
 
+func checkTime(minDate time.Time, maxDate time.Time, modTime time.Time, add *bool) {
+	if *add == true {
+		if !minDate.IsZero() && minDate.After(modTime) {
+			*add = false
+		}
+		if !maxDate.IsZero() && maxDate.Before(modTime) {
+			*add = false
+		}
+	}
+}
+
 func isValidDepth(path string, maxDepth int, baseDepth int) bool {
 	pathDepth := depth(path)
 
@@ -158,7 +169,8 @@ func readDirectory(path string, depth int, baseDepth int, f finder) []os.FileInf
 				checkName(f.namesLike, element.Name(), &add)
 				checkNotName(f.namesNotLike, element.Name(), &add)
 				checkSize(f.minSize, f.maxSize, element.Size(), &add)
-				checkSince(f.minDate, element.ModTime(), &add)
+				checkTime(f.minModDate, f.maxModDate, element.ModTime(), &add)
+				checkTime(f.minCreateDate, f.maxCreateDate, element.ModTime(), &add) // no support for .CreateTime
 				if add {
 					items = append(items, element)
 				}

@@ -15,12 +15,13 @@ var (
 )
 
 type finder struct {
-	namesLike, namesNotLike   []*regexp.Regexp
-	in                        string
-	depth                     int
-	excludeHidden, excludeVCS bool
-	minSize, maxSize          int64
-	minDate                   time.Time
+	namesLike, namesNotLike      []*regexp.Regexp
+	in                           string
+	depth                        int
+	excludeHidden, excludeVCS    bool
+	minSize, maxSize             int64
+	minModDate, maxModDate       time.Time
+	minCreateDate, maxCreateDate time.Time
 }
 
 type Finder struct {
@@ -210,10 +211,39 @@ func (finder *Finder) ExcludeVCS() *Finder {
 // Filters files by modification date (date must be newer)
 //
 // Example:
-//    finder := Create("/home/myuser/mydir").Since(-3) // 3 days old at most
+//    finder := Create("/home/myuser/mydir").Since(3) // 3 days old at most
 func (finder *Finder) Since(days int) *Finder {
 	minDate := time.Now().AddDate(0, 0, -days) // x days ago
-	finder.f.minDate = minDate
+	finder.f.minModDate = minDate
+	return finder
+}
+
+// Filters files by creation date
+//
+// CREATION DATE IS NOT YET REPORTED BY .FileInfo INTERFACE
+//
+// Example:
+//    .CreatedOn(">", time.Now().AddDate(0, 0, -10)) // 10 days old at most
+func (finder *Finder) CreatedOn(op string, target time.Time) *Finder {
+	if op == "<" {
+		finder.f.maxCreateDate = target
+	} else {
+		finder.f.minCreateDate = target
+	}
+	return finder
+}
+
+// Filters files by modification date
+//
+// Example:
+//    .CreatedOn(">", time.Now().AddDate(0, -1, 0)) // after 1 month
+//    .CreatedOn("<", time.Now().AddDate(0, 0, -7)) // exclude this week
+func (finder *Finder) LastModifiedOn(op string, target time.Time) *Finder {
+	if op == "<" {
+		finder.f.maxModDate = target
+	} else {
+		finder.f.minModDate = target
+	}
 	return finder
 }
 
